@@ -1,0 +1,65 @@
+# Dockerfile optimizado para Raspberry Pi 5 (ARM64)
+FROM python:3.11-slim-bookworm
+
+# Metadatos
+LABEL maintainer="antropometria-app"
+LABEL description="Calculadora Antropométrica para Raspberry Pi 5"
+LABEL version="1.0"
+
+# Establecer variables de entorno optimizadas para RPi
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONIOENCODING=utf-8
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
+# Variables para optimización ARM
+ENV MAKEFLAGS="-j4"
+ENV CFLAGS="-O2 -pipe"
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Instalar dependencias del sistema optimizadas para ARM64
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    curl \
+    wget \
+    pkg-config \
+    libffi-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copiar requirements primero para aprovechar cache de Docker
+COPY requirements.rpi.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir wheel setuptools \
+    && pip install --no-cache-dir -r requirements.txt
+
+# Copiar el código de la aplicación
+COPY app.py .
+COPY data_fusion.py .
+COPY fused_anthropometric_data.json .
+COPY templates/ ./templates/
+COPY static/ ./static/
+
+# Crear directorio para logs y datos
+RUN mkdir -p /app/logs /app/data
+
+# Crear usuario no-root para seguridad
+RUN adduser --disabled-password --gecos '' --uid 1000 appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
+# Configurar health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:5000/ || exit 1
+
+# Exponer puerto
+EXPOSE 5000
+
+# Comando optimizado para RPi con menos workers
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "4", "--timeout", "120", "--worker-class", "gthread", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload", "app:app"]

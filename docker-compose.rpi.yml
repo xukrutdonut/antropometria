@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  antropometria-rpi:
+    build:
+      context: .
+      dockerfile: Dockerfile.rpi
+    container_name: antropometria-rpi5
+    ports:
+      - "8080:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+      - TZ=Europe/Madrid
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data:ro
+    restart: unless-stopped
+    
+    # Configuraciones específicas para Raspberry Pi
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '2.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
+    
+    # Health check optimizado
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+    
+    networks:
+      - rpi-network
+    
+    # Logging optimizado para RPi
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis ligero para cache (opcional)
+  redis-rpi:
+    image: redis:7-alpine
+    container_name: antropometria-redis-rpi
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - rpi-network
+    
+    # Configuración optimizada para RPi
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+    
+    command: redis-server --appendonly yes --maxmemory 100mb --maxmemory-policy allkeys-lru
+    
+    # Health check para Redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Nginx ligero como proxy (opcional)
+  nginx-rpi:
+    image: nginx:alpine
+    container_name: antropometria-nginx-rpi
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.rpi.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - antropometria-rpi
+    restart: unless-stopped
+    networks:
+      - rpi-network
+    
+    # Recursos limitados para nginx
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: '0.25'
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  rpi-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16

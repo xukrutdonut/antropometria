@@ -1,0 +1,18 @@
+# Configuración simplificada para desarrollo
+version: '3.8'
+
+services:
+  antropometria-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: antropometria-simple
+    ports:
+      - "8083:5000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    command: ["python", "app.py"]

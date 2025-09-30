@@ -1,0 +1,36 @@
+# Requirements optimizados para Raspberry Pi 5 (ARM64)
+
+# Web framework - versiones estables para ARM
+Flask==3.0.3
+gunicorn==21.2.0
+Werkzeug==3.0.3
+Jinja2==3.1.4
+MarkupSafe==2.1.5
+click==8.1.7
+itsdangerous==2.1.2
+blinker==1.7.0
+
+# HTTP y scraping - versiones compatibles ARM
+requests==2.31.0
+urllib3==2.2.2
+certifi==2024.7.4
+charset-normalizer==3.3.2
+idna==3.7
+
+# Parsing HTML - optimizado para ARM
+beautifulsoup4==4.12.3
+soupsieve==2.5
+lxml==5.2.2
+
+# Data processing - versiones ARM optimizadas
+pandas==2.2.2
+numpy==1.26.4
+python-dateutil==2.9.0.post0
+pytz==2024.1
+tzdata==2024.1
+
+# Selenium simplificado (sin drivers pesados)
+# selenium==4.21.0  # Comentado para reducir tamaño
+
+# Utilidades
+six==1.16.0

@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  antropometria-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: antropometria-calculator
+    ports:
+      - "8080:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    volumes:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - antropometria-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.antropometria.rule=Host(`antropometria.local`)"
+      - "traefik.http.services.antropometria.loadbalancer.server.port=5000"
+
+  # Opcional: Base de datos Redis para caché
+  redis:
+    image: redis:7-alpine
+    container_name: antropometria-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - antropometria-network
+    command: redis-server --appendonly yes
+
+  # Opcional: Nginx como proxy reverso
+  nginx:
+    image: nginx:alpine
+    container_name: antropometria-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - antropometria-app
+    restart: unless-stopped
+    networks:
+      - antropometria-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  antropometria-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -1,0 +1,141 @@
+/* Estilos personalizados adicionales para la aplicación */
+
+.calculator-section {
+    padding: 2rem 0;
+}
+
+.metric-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin: 2rem 0;
+}
+
+.percentile-band {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.percentile-p3 { background-color: #dc3545; }
+.percentile-p10 { background-color: #fd7e14; }
+.percentile-normal { background-color: #28a745; }
+.percentile-p90 { background-color: #fd7e14; }
+.percentile-p97 { background-color: #dc3545; }
+
+.data-table {
+    font-size: 0.9rem;
+}
+
+.data-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+}
+
+.data-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.export-section {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: scale(1.02);
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-normal { background-color: #28a745; }
+.status-warning { background-color: #ffc107; }
+.status-danger { background-color: #dc3545; }
+
+@media (max-width: 768px) {
+    .metric-card {
+        margin: 0.25rem 0;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+    
+    .main-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
+/* Animaciones personalizadas */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* Tooltips personalizados */
+.custom-tooltip {
+    position: relative;
+}
+
+.custom-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Print styles */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    .main-container {
+        box-shadow: none;
+        margin: 0;
+        padding: 1rem;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+}

@@ -1,0 +1,472 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora Antropométrica - Inicio{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-3">
+        <i class="fas fa-user-md text-primary"></i>
+        Calculadora Antropométrica
+    </h1>
+    <p class="lead">Herramienta profesional para cálculos antropométricos pediátricos</p>
+    <p class="text-muted">Basada en datos de SEGHNP y WebPediátrica</p>
+</div>
+
+<!-- Calculadoras Principales -->
+<section id="calculadoras" class="mb-5">
+    <h2 class="mb-4">
+        <i class="fas fa-calculator text-primary me-2"></i>
+        Calculadoras Disponibles
+    </h2>
+    
+    <div class="row">
+        <!-- IMC Calculator -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-weight"></i>
+                        Calculadora de IMC
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="imcForm">
+                        <div class="mb-3">
+                            <label for="peso" class="form-label">Peso (kg)</label>
+                            <input type="number" class="form-control" id="peso" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="talla" class="form-label">Talla (cm)</label>
+                            <input type="number" class="form-control" id="talla" step="0.1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="calcularIMC">
+                            Calcular IMC
+                            <span class="loading spinner-border spinner-border-sm ms-2"></span>
+                        </button>
+                    </form>
+                    
+                    <div id="resultadoIMC" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Talla Diana -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-ruler-vertical"></i>
+                        Talla Diana Familiar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="tallaDianaForm">
+                        <div class="mb-3">
+                            <label for="tallaPadre" class="form-label">Talla del Padre (cm)</label>
+                            <input type="number" class="form-control" id="tallaPadre" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tallaMadre" class="form-label">Talla de la Madre (cm)</label>
+                            <input type="number" class="form-control" id="tallaMadre" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sexoHijo" class="form-label">Sexo del Hijo/a</label>
+                            <select class="form-control" id="sexoHijo" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="calcularTallaDiana">
+                            Calcular Talla Diana
+                            <span class="loading spinner-border spinner-border-sm ms-2"></span>
+                        </button>
+                    </form>
+                    
+                    <div id="resultadoTallaDiana" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Percentiles -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line"></i>
+                        Cálculo de Percentiles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="percentilesForm">
+                        <div class="mb-3">
+                            <label for="tipoMedida" class="form-label">Tipo de Medida</label>
+                            <select class="form-control" id="tipoMedida" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="peso">Peso</option>
+                                <option value="talla">Talla</option>
+                                <option value="imc">IMC</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="valorMedida" class="form-label">Valor de la Medida</label>
+                            <input type="number" class="form-control" id="valorMedida" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edadMeses" class="form-label">Edad (meses)</label>
+                            <input type="number" class="form-control" id="edadMeses" min="0" max="216" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sexo" class="form-label">Sexo</label>
+                            <select class="form-control" id="sexo" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="calcularPercentil">
+                            Calcular Percentil
+                            <span class="loading spinner-border spinner-border-sm ms-2"></span>
+                        </button>
+                    </form>
+                    
+                    <div id="resultadoPercentil" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Velocidad de Crecimiento -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Velocidad de Crecimiento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="velocidadForm">
+                        <div class="mb-3">
+                            <label for="tallaInicial" class="form-label">Talla Inicial (cm)</label>
+                            <input type="number" class="form-control" id="tallaInicial" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tallaActual" class="form-label">Talla Actual (cm)</label>
+                            <input type="number" class="form-control" id="tallaActual" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tiempoMeses" class="form-label">Tiempo Transcurrido (meses)</label>
+                            <input type="number" class="form-control" id="tiempoMeses" min="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="calcularVelocidad">
+                            Calcular Velocidad
+                            <span class="loading spinner-border spinner-border-sm ms-2"></span>
+                        </button>
+                    </form>
+                    
+                    <div id="resultadoVelocidad" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Información sobre Percentiles -->
+<section id="percentiles" class="mb-5">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-info-circle"></i>
+                Interpretación de Percentiles
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="metric-card border-start border-danger border-5">
+                        <div class="metric-value text-danger">< P3</div>
+                        <div class="metric-label">Por debajo del rango normal</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="metric-card border-start border-warning border-5">
+                        <div class="metric-value text-warning">P3 - P10</div>
+                        <div class="metric-label">Límite inferior normal</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="metric-card border-start border-success border-5">
+                        <div class="metric-value text-success">P10 - P90</div>
+                        <div class="metric-label">Rango normal</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="metric-card border-start border-warning border-5">
+                        <div class="metric-value text-warning">P90 - P97</div>
+                        <div class="metric-label">Límite superior normal</div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="metric-card border-start border-danger border-5">
+                        <div class="metric-value text-danger">> P97</div>
+                        <div class="metric-label">Por encima del rango normal</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ayuda y Documentación -->
+<section id="ayuda" class="mb-5">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-question-circle"></i>
+                Ayuda e Información
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Cómo usar la calculadora</h5>
+                    <ul>
+                        <li>Seleccione el tipo de cálculo que desea realizar</li>
+                        <li>Ingrese los datos requeridos en los campos</li>
+                        <li>Haga clic en "Calcular" para obtener los resultados</li>
+                        <li>Los resultados incluyen interpretación automática</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Fuentes de datos</h5>
+                    <p>Esta calculadora utiliza datos de:</p>
+                    <ul>
+                        <li><strong>SEGHNP:</strong> Sociedad Española de Gastroenterología, Hepatología y Nutrición Pediátrica</li>
+                        <li><strong>WebPediátrica:</strong> Recursos de endocrinología pediátrica</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// IMC Calculator
+document.getElementById('imcForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!validateForm(this)) {
+        showAlert('Por favor, complete todos los campos requeridos.', 'warning');
+        return;
+    }
+    
+    showLoading('calcularIMC');
+    
+    try {
+        const data = {
+            peso: parseFloat(document.getElementById('peso').value),
+            talla: parseFloat(document.getElementById('talla').value)
+        };
+        
+        const result = await apiCall('/api/calcular_imc', data);
+        
+        if (result.success) {
+            const resultDiv = document.getElementById('resultadoIMC');
+            resultDiv.innerHTML = `
+                <div class="result-card p-3 rounded fade-in">
+                    <h6>Resultado:</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="metric-card">
+                                <div class="metric-value">${result.imc}</div>
+                                <div class="metric-label">IMC (kg/m²)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-card border-start border-${result.clasificacion.color} border-5">
+                                <div class="metric-value text-${result.clasificacion.color}">${result.clasificacion.categoria}</div>
+                                <div class="metric-label">Clasificación</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        } else {
+            showAlert('Error al calcular IMC: ' + result.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error de conexión. Intente nuevamente.', 'danger');
+    }
+    
+    hideLoading('calcularIMC');
+});
+
+// Talla Diana Calculator
+document.getElementById('tallaDianaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!validateForm(this)) {
+        showAlert('Por favor, complete todos los campos requeridos.', 'warning');
+        return;
+    }
+    
+    showLoading('calcularTallaDiana');
+    
+    try {
+        const data = {
+            talla_padre: parseFloat(document.getElementById('tallaPadre').value),
+            talla_madre: parseFloat(document.getElementById('tallaMadre').value),
+            sexo_hijo: document.getElementById('sexoHijo').value
+        };
+        
+        const result = await apiCall('/api/calcular_talla_diana', data);
+        
+        if (result.success) {
+            const resultDiv = document.getElementById('resultadoTallaDiana');
+            resultDiv.innerHTML = `
+                <div class="result-card p-3 rounded fade-in">
+                    <h6>Resultado:</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="metric-card">
+                                <div class="metric-value">${result.resultado.talla_diana}</div>
+                                <div class="metric-label">Talla Diana (cm)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="metric-card">
+                                <div class="metric-value">${result.resultado.rango_inferior}</div>
+                                <div class="metric-label">Rango Mínimo (cm)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="metric-card">
+                                <div class="metric-value">${result.resultado.rango_superior}</div>
+                                <div class="metric-label">Rango Máximo (cm)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        } else {
+            showAlert('Error al calcular talla diana: ' + result.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error de conexión. Intente nuevamente.', 'danger');
+    }
+    
+    hideLoading('calcularTallaDiana');
+});
+
+// Percentiles Calculator
+document.getElementById('percentilesForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!validateForm(this)) {
+        showAlert('Por favor, complete todos los campos requeridos.', 'warning');
+        return;
+    }
+    
+    showLoading('calcularPercentil');
+    
+    try {
+        const data = {
+            medida: parseFloat(document.getElementById('valorMedida').value),
+            edad_meses: parseInt(document.getElementById('edadMeses').value),
+            sexo: document.getElementById('sexo').value,
+            tipo_medida: document.getElementById('tipoMedida').value
+        };
+        
+        const result = await apiCall('/api/calcular_percentil', data);
+        
+        if (result.success) {
+            const resultDiv = document.getElementById('resultadoPercentil');
+            resultDiv.innerHTML = `
+                <div class="result-card p-3 rounded fade-in">
+                    <h6>Resultado:</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="metric-card">
+                                <div class="metric-value">P${result.percentil}</div>
+                                <div class="metric-label">Percentil</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-card border-start border-${result.interpretacion.color} border-5">
+                                <div class="metric-value text-${result.interpretacion.color}">${result.interpretacion.interpretacion}</div>
+                                <div class="metric-label">Interpretación</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        } else {
+            showAlert('Error al calcular percentil: ' + result.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error de conexión. Intente nuevamente.', 'danger');
+    }
+    
+    hideLoading('calcularPercentil');
+});
+
+// Velocidad de Crecimiento Calculator
+document.getElementById('velocidadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!validateForm(this)) {
+        showAlert('Por favor, complete todos los campos requeridos.', 'warning');
+        return;
+    }
+    
+    showLoading('calcularVelocidad');
+    
+    try {
+        const data = {
+            talla_inicial: parseFloat(document.getElementById('tallaInicial').value),
+            talla_actual: parseFloat(document.getElementById('tallaActual').value),
+            tiempo_meses: parseInt(document.getElementById('tiempoMeses').value)
+        };
+        
+        const result = await apiCall('/api/calcular_velocidad_crecimiento', data);
+        
+        if (result.success) {
+            const resultDiv = document.getElementById('resultadoVelocidad');
+            resultDiv.innerHTML = `
+                <div class="result-card p-3 rounded fade-in">
+                    <h6>Resultado:</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="metric-card">
+                                <div class="metric-value">${result.velocidad_cm_año}</div>
+                                <div class="metric-label">cm/año</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="metric-card border-start border-${result.evaluacion.color} border-5">
+                                <div class="metric-value text-${result.evaluacion.color}">${result.evaluacion.evaluacion}</div>
+                                <div class="metric-label">Evaluación</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        } else {
+            showAlert('Error al calcular velocidad: ' + result.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error de conexión. Intente nuevamente.', 'danger');
+    }
+    
+    hideLoading('calcularVelocidad');
+});
+</script>
+{% endblock %}
